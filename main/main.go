@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	_ "github.com/lib/pq"
+	_ "modernc.org/sqlite"
 )
 
 const ( //Enter your PostgreSQL info,or change sql.Open parameters when using a different SQL management system
@@ -32,13 +32,13 @@ type SuccessFlag struct {
 	Success bool `json:"done"`
 }
 
-//Starts up the server the sets up handlers for requests
+// Starts up the server the sets up handlers for requests
 func main() {
 	PORT := os.Getenv("PORT")
 	var err error
 	router := mux.NewRouter()
-	db, err = sql.Open("postgres", fmt.Sprintf("dbname=%s user=%s password=%s host=%s port=%s",
-		DB_NAME, DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT))
+	db, err = sql.Open("sqlite", fmt.Sprintf("%s",
+		DB_NAME))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -106,7 +106,7 @@ func main() {
 	}
 }
 
-//Recieves notes from DB
+// Recieves notes from DB
 func getNotes() []byte {
 	var notes []Note
 	var count int
@@ -142,7 +142,7 @@ func getNotes() []byte {
 	return jsonData
 }
 
-//Adds a note to DB
+// Adds a note to DB
 func addNote(note string) {
 	_, err := db.Exec("INSERT INTO notes (note) VALUES($1)", note)
 	if err != nil {
@@ -150,7 +150,7 @@ func addNote(note string) {
 	}
 }
 
-//Deletes a note from DB using its ID
+// Deletes a note from DB using its ID
 func deleteNote(id int) {
 	_, err := db.Exec("delete from notes where id=$1", id)
 	if err != nil {
